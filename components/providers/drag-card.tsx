@@ -14,7 +14,6 @@ export function DragCardProvider({children, maxHeight, maxWidth}: Props) {
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            console.log(e)
             if (dragged) {
                 setPosition(
                     { 
@@ -45,9 +44,6 @@ export function DragCardProvider({children, maxHeight, maxWidth}: Props) {
                 transform: "translate(-50%, -50%)",
             }}
         >
-            {dragged && (
-                <p>dragged</p>
-            )}
             {children}
         </div>
     );
