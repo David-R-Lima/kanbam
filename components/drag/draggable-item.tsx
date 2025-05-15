@@ -90,8 +90,7 @@ export function DraggableItem({
       style={{
         top: position.y,
         left: position.x,
-        width: parentSize.width - 40,
-        height: 80,
+        minHeight: 80
       }}
       {...props}
     >
