@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface Props extends React.ComponentProps<"div"> {
+  boardId: string
   children: React.ReactNode;
 }
 
 export function DraggableItem({
+  boardId,
   children,
   className,
   ...props
@@ -17,25 +19,30 @@ export function DraggableItem({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [parentSize, setParentSize] = useState({ width: 0, height: 0 });
+  const [boardSize, setBoardSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
         if(dragging) {
+            const board = document.getElementById(boardId);
+
+            if (!board) return;
+
             if (!ref.current || !ref.current.parentElement) return;
 
-            const parentRect = ref.current.parentElement.getBoundingClientRect();
+            const boardRect = board.getBoundingClientRect();
     
-            setParentSize({
-                width: parentRect.width,
-                height: parentRect.height,
+            setBoardSize({
+                width: boardRect.width,
+                height: boardRect.height,
             });
     
-            const x = e.clientX - parentRect.left - offset.x;
-            const y = e.clientY - parentRect.top - offset.y;
+            const x = e.clientX - boardRect.left - offset.x;
+            const y = e.clientY - boardRect.top - offset.y;
     
             setPosition({
-                x: Math.min(Math.max(0, x), parentSize.width - 100 ),
-                y: Math.min(Math.max(0, y), parentSize.height - 100 ),
+                x: Math.min(Math.max(0, x), boardSize.width - 100 ),
+                y: Math.min(Math.max(0, y), boardSize.height - 100),
             });
         }
     };
@@ -48,8 +55,19 @@ export function DraggableItem({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", stopDragging);
     };
-  }, [dragging, offset, parentSize]);
+  }, [dragging, offset, parentSize, boardSize]);
 
+
+  useEffect(() => {
+    if (!ref.current || !ref.current.parentElement) return;
+
+    const parentRect = ref.current.parentElement.getBoundingClientRect();
+
+    setParentSize({
+      width: parentRect.width,
+      height: parentRect.height,
+  });
+  }, [])
   return (
     <div
       ref={ref}
@@ -64,7 +82,7 @@ export function DraggableItem({
         }
       }}
       className={cn(
-        `absolute select-none h-[100px] w-[100px] border-2 border-red-500 flex items-center justify-center ${
+        `absolute select-none flex ${
           dragging ? "cursor-grabbing" : "cursor-grab"
         }`,
         className
@@ -72,6 +90,8 @@ export function DraggableItem({
       style={{
         top: position.y,
         left: position.x,
+        width: parentSize.width - 40,
+        height: 80,
       }}
       {...props}
     >

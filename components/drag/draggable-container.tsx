@@ -9,7 +9,7 @@ interface Props extends React.ComponentProps<"div"> {
 export function DraggableBoard({children, className, ...props}: Props) {
   return (
     <div
-      className={cn("flex items-start justify-around",className)}
+      className={cn("relative flex items-start justify-around",className)}
       {...props}
     >
       {children}
